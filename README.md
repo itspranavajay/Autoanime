@@ -11,7 +11,3 @@ New Anime Upload Your Channel
 4. Add a bot to your anime channel and make it an admin
 5. Enjoy The AutoAnime Channel
 
-#Credit 
-1. Xditya 
-2. Unknown Person
-3. Me
