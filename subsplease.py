@@ -14,7 +14,7 @@ from decouple import config
 logging.info("Starting...")
 api_id = os.environ.get("APP_ID")
 api_hash = os.environ.get("API_HASH")
-url = os.environ.get("FEED_URL")
+url = "https://subsplease.org/rss/?r=sd"
 token = os.environ.get("BOT_TOKEN")
 session = os.environ.get("SESSION")
 log_group = int(os.environ.get("LOG_GROUP", None))
