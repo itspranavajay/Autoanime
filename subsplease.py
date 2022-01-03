@@ -14,7 +14,7 @@ from decouple import config
 logging.info("Starting...")
 api_id = os.environ.get("APP_ID")
 api_hash = os.environ.get("API_HASH")
-url = "https://subsplease.org/rss/?r=sd"
+url = list(set(i for i in os.environ.get("URL", "https://subsplease.org/rss/?r=sd").split("|")))
 token = os.environ.get("BOT_TOKEN")
 session = os.environ.get("SESSION")
 log_group = int(os.environ.get("LOG_GROUP", None))
@@ -36,24 +36,29 @@ n = Client(
     
 )
 
-if db.get(url) == None:
-  db.update(url, "*")
+for kk in url:
+    if db.get(kk) == None:
+        db.update(kk, "*")
 
-def feed():
-    FEED = feedparser.parse(url)
-    entry = FEED.entries[0]
-    if entry.id != db.get(url).link:
-      message = f"/magnet {entry.link}"
-      try:
-        app.send_message(log_group, message)
-        db.update(url, entry.id)
-      except FloodWait as e:
-        print(f"FloodWait: {e.x} seconds")
-        sleep(e.x)
-      except Exception as e:
-        print(e)
-    else:
-      print(f"Checked : {entry.id}")
+def create_feed_checker(kk):
+    def check_feed():
+        FEED = feedparser.parse(kk)
+        if len(FEED.entries) == 0:
+            return
+        entry = FEED.entries[0]
+        if entry.id != db.get(kk).link:
+            message = f"/magnet {entry.link}"
+            try:
+                app.send_message(log_channel, message)
+                db.update(kk, entry.id)
+            except FloodWait as e:
+                print(f"FloodWait: {e.x} Seconds")
+                sleep(e.x)
+            except Exception as e:
+                print(e)
+        else:
+            print(f"Checked: {entry.id}")
+    return check_feed
 
 
 
@@ -103,7 +108,9 @@ async def start(client, message):
 
 
 scheduler = BackgroundScheduler()
-scheduler.add_job(check_feed, "interval", seconds=check_interval, max_instances=max_instances)
+for kk in url:
+    feed_checker = create_feed_checker(kk)
+    scheduler.add_job(feed_checker, "interval", seconds=check_interval, max_instances=max_instances)
 scheduler.start()
 k.start()
 n.start()
