@@ -15,7 +15,6 @@ logging.info("Starting...")
 api_id = os.environ.get("APP_ID")
 api_hash = os.environ.get("API_HASH")
 url = list(set(i for i in os.environ.get("URL", "https://subsplease.org/rss/?r=sd").split("|")))
-token = os.environ.get("BOT_TOKEN")
 session = os.environ.get("SESSION")
 log_group = int(os.environ.get("LOG_GROUP", None))
 log_channel = int(os.environ.get("LOG_CHANNEL", None))
@@ -28,13 +27,6 @@ k = Client(
     api_hash=api_hash
 )
 
-n = Client(
-    "AutoAnime",
-    api_id=api_id,
-    api_hash=api_hash,
-    bot_token=token,
-    
-)
 
 for kk in url:
     if db.get(kk) == None:
@@ -75,36 +67,8 @@ async def n(client, message):
   else:
      file_name = kk_name
   title = f"{file_name}"
-  await message.copy(log_group, caption=title)
-
-
-@n.on_message((filters.video) & filters.chat(log_group) & filters.incoming & ~filters.forwarded)
-async def n(client, message):
-  media = message.video
-  title = f"{message.caption}"
   await message.copy(log_channel, caption=title)
 
-prvt_message = '''
-Hello there, I am Anime Uploaded Bot for lol I upload latest Animes there. If you liked my work.
-Developer : @Madepranav
-Language : python
-Framework : pyrogram
-'''
-grp_message = '''
-Hello there, I am Anime Uploaded Bot for lmeo
-'''
-
-@n.on_message(filters.command(["start"], prefixes=["/", "!"]))
-async def start(client, message):
-    self = await bot.get_me()
-    busername = self.username
-    if message.chat.type != "private":
-        await message.reply_text(grp_message)
-        return
-    else:
-        buttons = [[InlineKeyboardButton("Dev", url="https://t.me/madepranav"),
-                    ]]
-        await message.reply_text(prvt_message, reply_markup=InlineKeyboardMarkup(buttons))
 
 
 scheduler = BackgroundScheduler()
