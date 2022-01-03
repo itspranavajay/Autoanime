@@ -1,0 +1,12 @@
+pytz
+TgCrypto
+Pyrogram
+feedparser
+requests
+telethon
+python-decouple
+redis
+bs4
+apscheduler
+psycopg2-binary
+sqlalchemy==1.3.23
