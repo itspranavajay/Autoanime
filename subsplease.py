@@ -14,7 +14,10 @@ from decouple import config
 logging.info("Starting...")
 api_id = os.environ.get("APP_ID")
 api_hash = os.environ.get("API_HASH")
-url = list(set(i for i in os.environ.get("URL", "https://subsplease.org/rss/?r=sd").split("|")))
+url = list(
+    set(os.environ.get("URL", "https://subsplease.org/rss/?r=sd").split("|"))
+)
+
 token = os.environ.get("BOT_TOKEN")
 session = os.environ.get("SESSION")
 log_group = int(os.environ.get("LOG_GROUP", None))
@@ -33,11 +36,11 @@ n = Client(
     api_id=api_id,
     api_hash=api_hash,
     bot_token=token,
-    
+
 )
 
 for kk in url:
-    if db.get(kk) == None:
+    if db.get(kk) is None:
         db.update(kk, "*")
 
 def create_feed_checker(kk):
@@ -64,18 +67,15 @@ def create_feed_checker(kk):
 
 @k.on_message((filters.video) & filters.chat(log_group) & filters.incoming & ~filters.forwarded)
 async def n(client, message):
-  media = message.video
-  name = f"{message.caption}"
-  if "[SubsPlease]" in name:
-     kk_name = name.replace("[SubsPlease]", "")
-  else:
-     kk_name = name
-  if "(" in kk_name:
-     filename = kk_name.rsplit("(", 1)[0]
-  else:
-     file_name = kk_name
-  title = f"{file_name}"
-  await message.copy(log_group, caption=title)
+    media = message.video
+    name = f"{message.caption}"
+    kk_name = name.replace("[SubsPlease]", "") if "[SubsPlease]" in name else name
+    if "(" in kk_name:
+       filename = kk_name.rsplit("(", 1)[0]
+    else:
+       file_name = kk_name
+    title = f"{file_name}"
+    await message.copy(log_group, caption=title)
 
 
 @n.on_message((filters.video) & filters.chat(log_group) & filters.incoming & ~filters.forwarded)
